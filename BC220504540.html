@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Rectangle Area dApp</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.6.0/dist/ethers.umd.min.js"></script>
+</head>
+
+<body>
+    <h1>Rectangle Area dApp</h1>
+
+    <button id="connectButton">Connect Wallet</button>
+    <br><br>
+
+    <label>Width:</label>
+    <input id="widthInput" type="number" min="1" />
+    <button id="setWidthButton">Set Width</button>
+    <br><br>
+
+    <label>Height:</label>
+    <input id="heightInput" type="number" min="1" />
+    <button id="setHeightButton">Set Height</button>
+    <br><br>
+
+    <button id="areaButton">Calculate Area</button>
+
+    <h2 id="result"></h2>
+
+    <script>
+        // ---------------------------
+        // Replace these with real values
+        // ---------------------------
+        const CONTRACT_ADDRESS = "0x3FdB17e8Cc31D86a4D5F252e80965f8F5dB9Eb52";
+
+        const ABI = [
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "h",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setHeight",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "w",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setWidth",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "area",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getHeight",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getWidth",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ]
+
+        let provider;
+        let signer;
+        let contract;
+
+        // ---------------------------
+        // Connect Wallet
+        // ---------------------------
+        document.getElementById("connectButton").onclick = async () => {
+            if (typeof window.ethereum !== "undefined") {
+                await ethereum.request({ method: "eth_requestAccounts" });
+
+                provider = new ethers.BrowserProvider(window.ethereum);
+                signer = await provider.getSigner();
+                contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+
+                alert("Wallet connected!");
+            } else {
+                alert("Please install MetaMask first.");
+            }
+        };
+
+        // ---------------------------
+        // Set Width
+        // ---------------------------
+        document.getElementById("setWidthButton").onclick = async () => {
+            const w = document.getElementById("widthInput").value;
+            if (!w || w <= 0) {
+                alert("Please enter a valid width > 0");
+                return;
+            }
+            try {
+                const tx = await contract.setWidth(w);
+                await tx.wait();
+                alert("Width set successfully!");
+            } catch (e) {
+                alert("Error: " + e);
+            }
+        };
+
+        // ---------------------------
+        // Set Height
+        // ---------------------------
+        document.getElementById("setHeightButton").onclick = async () => {
+            const h = document.getElementById("heightInput").value;
+            if (!h || h <= 0) {
+                alert("Please enter a valid height > 0");
+                return;
+            }
+            try {
+                const tx = await contract.setHeight(h);
+                await tx.wait();
+                alert("Height set successfully!");
+            } catch (e) {
+                alert("Error: " + e);
+            }
+        };
+
+        // ---------------------------
+        // Calculate Area
+        // ---------------------------
+        document.getElementById("areaButton").onclick = async () => {
+            try {
+                const a = await contract.area();
+                document.getElementById("result").innerText = "Area = " + a;
+            } catch (e) {
+                alert("Error: " + e);
+            }
+        };
+
+    </script>
+
+</body>
+
+</html>
+
+
+git init
+git branch -M main
+git remote add origin git@github.com:ju22dev/rectangle.git
+git push -u origin main
